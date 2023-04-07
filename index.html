@@ -127,9 +127,11 @@
 </body>
 
 <script>
+    // categories headers
     const categories = ["Business", "Entertainment", "Environment", "Food", "Health", "Politics",
         "Science", "Sports", "Technology", "Top", "Tourism", "World"];
 
+    // countries headers
     const countryObj = [
         {"Afghanistan": "af"},{"Algeria": "dz"},{"Angola": "ao"},{"Argentina": "ar"},{"Australia": "au"},{"Austria": "at"},{"Azerbaijan": "az"},{"Bahrain": "bh"},
         {"Bangladesh": "bd"},{"Belarus": "by"},{"Belgium": "be"},{"Bolivia": "bo"}, {"Bosnia&Herzegovina": "ba"}, {"Brazil": "br"}, {"Bulgaria": "bg"},
@@ -149,6 +151,7 @@
         {"United States of America": "us"}, {"Uruguay": "uy"}, {"Uzbekistan": "uz"}, {"Venezuela": "ve"}, {"Vietnam": "vi"}, {"Yemen": "ye"}, {"Zambia": "zm"}, {"Zimbabwe": "zw"}
     ];
 
+    // language headers
     const languageObj = [
         {"Belarusian": "be"}, {"Afrikaans": "af"}, {"Amharic": "am", "Arabic": "ar"}, {"Azerbaijani": "az"}, {"Bengali": "bn"}, {"Bosnian": "bs"},
         {"Bulgarian": "bg"}, {"Burmese": "my"}, {"Central Kurdish": "ckb"}, {"Chinese": "zh"}, {"Croatian": "hr"}, {"Czech": "cs"}, {"Danish": "da"},
@@ -160,11 +163,10 @@
         {"Tamil": "ta"}, {"Thai": "th"}, {"Turkish": "tr"}, {"Turkmen": "tk"}, {"Ukrainian": "uk"}, {"Urdu": "ur"}, {"Uzbek": "uz"}, {"Vietnamese": "vi"}
     ]
     
+    // render every single checkboxes for categories, countries, and languages.
     function renderAllCheckboxes(checkboxtype, name){
-        console.log(`checkbox-${checkboxtype}`)
         const parent = document.getElementById(`checkbox-${checkboxtype}`);
         
-        console.log(parent)
         // Loop to create 10 checkboxes
         for (let i = 0; i < name.length; i++) {
             // Create a unique ID for each checkbox
@@ -207,10 +209,14 @@
         }
     }
 
+    // render all of the categories checkboxes
     renderAllCheckboxes('category', categories)
+    // render all of the languages checkboxes
     renderAllCheckboxes('language', languageObj)
+    // render all of the countries checkboxes
     renderAllCheckboxes('country', countryObj)
 
+    // a function to validate the input when the user submits the form
     function submitValidation(event){
         event.preventDefault()
         let q = document.getElementById("keyword-input");
@@ -225,19 +231,19 @@
         // check if categories checkbox has less than or equal to 5
         let categories_checkboxes = document.querySelector("#checkbox-category")
         let categories_checked = categories_checkboxes.querySelectorAll('input[type=checkbox]:checked')
-        //
+        
         let language_checkboxes = document.querySelector("#checkbox-language")
         let language_checked = language_checkboxes.querySelectorAll('input[type=checkbox]:checked')
 
         let country_checkboxes = document.querySelector("#checkbox-country")
         let country_checked = country_checkboxes.querySelectorAll('input[type=checkbox]:checked')
 
+        // check if the user has checked more than 5 checkboxes.
         if(categories_checked.length > 5 || language_checked.length > 5 || country_checked.length > 5){
             return false;
         }
 
-        console.log(country_checked.length)
-
+        // retrieve all of the categories being chosen by the user
         let listCategories = ''
         for(let i = 0; i < categories_checked.length; i++){
             if(i > 0) listCategories = listCategories.concat(",")
@@ -245,22 +251,21 @@
             listCategories = listCategories.concat(categories_checked[i].value.toLowerCase())
         }
 
+        // retrieve all of the languages being chosen by the user
         let listLanguages = ''
         for(let i = 0; i < language_checked.length; i++){
             if(i > 0) listLanguages = listLanguages.concat(",")
             listLanguages = listLanguages.concat(language_checked[i].value.toLowerCase())
         }
 
+        // retrieve all of the countries being chosen by the user
         let listCountries = ''
         for(let i = 0; i < country_checked.length; i++){
             if(i > 0) listCountries = listCountries.concat(",")
             listCountries = listCountries.concat(country_checked[i].value.toLowerCase())
         }
 
-        console.log(listCategories)
-        console.log(listLanguages)
-        console.log(listCountries)
-
+        // check if q and qTitle exists since only one of the field can exist at one time
         if(q.value.length > 0 && qInTitle.value.length > 0){
             showInvalidError(q)
             showInvalidError(qInTitle)
@@ -270,6 +275,7 @@
             removeInvalidError(qInTitle)
         }
         
+        // a Javascript object before being converted into JSON format and post into the back-end for further processing
         const payload = 
         { 
             "q": q.value,
@@ -280,8 +286,7 @@
             "domain": domain.value
         }
 
-        console.log(payload)
-
+        // a method to post the data from front-end to back-end PHP for processing
         fetch('./backend/index.php', {
             method: 'POST',
             headers: {
@@ -353,6 +358,7 @@
                     countries.innerHTML += `<span class="badge badge-primary">${res[i].country[j]}</span>`;
                 }
                 
+                // loop over all of the keywords
                 let keywordLength = res[i].keywords !== null ? res[i].keywords.length : 0
                 for(let j = 0; j < keywordLength; j++){
                     keywords.innerHTML += `<span class="badge badge-danger">${res[i].keywords[j]}</span>`;
@@ -372,7 +378,7 @@
                 articles.appendChild(keywords)
             }
         }).catch(error => {
-            console.error('Error:', error);
+            // handle when an error occurs
             let articles = document.getElementById('result-articles')
             noResult(articles)
             return false;
@@ -381,6 +387,7 @@
         return true;
     }
 
+    // remove all articles when a new query is made
     function removeAllArticles(parent_articles){
         let child = parent_articles.lastElementChild; 
             // remove every articles when a new query is made by the user
@@ -390,6 +397,7 @@
         }
     }
 
+    // check if the input contains only letters from a-z and A-Z
     function checkAlphabetical(tocheck){
         console.log(tocheck)
         let regex = /^[a-zA-Z]*$/; // Example regex for alphabetical input, allow for emptiness
@@ -402,6 +410,7 @@
         }
     }
     
+    // a function to handle when the query cannot retrieve any result
     function noResult(articles){
         removeAllArticles(articles)
         const notifyNoResult = document.createElement('h4')
@@ -410,13 +419,14 @@
         articles.appendChild(notifyNoResult)
     }
 
+    // show a customized error when the input does not match the specified criteria
     function showInvalidError(tocheck){
        tocheck.classList.add("is-invalid");
     }
 
+    // remove the customized error when the input does not match the specified criteria
     function removeInvalidError(tocheck){
         tocheck.classList.remove("is-invalid");
-    }    
-    
+    }      
 </script>
 </html>
