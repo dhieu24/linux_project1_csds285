@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .dropdown-menu{
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container d-flex mb-5">
+        <form class="row g-3" onsubmit="submitValidation(event);">
+            <div class="col-12 mb-5">
+                <h1 class="text-center">Get the Latest News</h1>
+                <p class="text-center lead">Read the latest news quicker than your competitors</p>
+            </div>
+            <div class="col-md-4">
+                <label for="keyword-input" class="form-label">Contains keyword: </label>
+                <input type="text" class="form-control" id="keyword-input" value="">
+                <div class="invalid-feedback">
+                    Please allow either keyword in title exists or keyword in article exists at one time.
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="title-input" class="form-label">Contains keyword in Title: </label>
+                <input type="text" class="form-control" id="title-input" value="">
+                <div class="invalid-feedback">
+                    Please allow either keyword in title exists or keyword in article exists at one time.
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="validationDefaultUsername" class="form-label" data-error="Please enter a country name">From country:</label>
+                <div class="input-group" id="country-input">
+                    <button 
+                        class="btn btn-secondary dropdown-toggle" 
+                        type="button" id="dropdownMenuButton" 
+                        data-toggle="dropdown" 
+                        aria-haspopup="true" 
+                        aria-expanded="false"
+                        style="width: 100%;"
+                    >
+                        Country:
+                    </button>
+                    <div id="checkbox-country" class="dropdown-menu" aria-labelledby="dropdownMenuButton"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label 
+                    for="validationDefault03" 
+                    class="form-label" 
+                    data-error="Please choose a maximum of 5 categories">Category: 
+                </label>
+                <div class="dropdown">
+                    <button 
+                        class="btn btn-secondary dropdown-toggle" 
+                        type="button" id="dropdownMenuButton" 
+                        data-toggle="dropdown" 
+                        aria-haspopup="true" 
+                        aria-expanded="false"
+                        style="width: 100%;"
+                    >
+                        Categories
+                    </button>
+                    <div id="checkbox-category" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    </div>
+                </div>
+                <div class="invalid-feedback">
+                    Please choose a maximum of 5 categories
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label 
+                    for="validationDefault04" 
+                    class="form-label"
+                    data-error="Please choose a valid language"
+                    >Language: 
+                </label>
+
+                <div class="dropdown" id="language-input">
+                    <button 
+                        class="btn btn-secondary dropdown-toggle" 
+                        type="button" id="dropdownMenuButton1" 
+                        data-toggle="dropdown" 
+                        aria-haspopup="true" 
+                        aria-expanded="false"
+                        style="width: 100%;"
+                    >
+                        Language
+                    </button>
+                    <div id="checkbox-language" class="dropdown-menu" aria-labelledby="dropdownMenuButton1"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label 
+                    for="validationDefault05"
+                    class="form-label"
+                    data-error="Please choose a valid domain">Domain: 
+                </label>
+                <input type="text" class="form-control" id="domain-input">
+                <div class="invalid-feedback">
+                    Please provide a valid domain name. For example: bbc, nytimes,etc.
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-center pt-4">
+                <div style="width:50%">
+                  <button class="btn btn-info btn-block" type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="result-articles" class="p-5">
+            <h3 class="text-center">Result Articles</h3>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+<script>
+    const categories = ["Business", "Entertainment", "Environment", "Food", "Health", "Politics",
+        "Science", "Sports", "Technology", "Top", "Tourism", "World"];
+
+    const countryObj = [
+        {"Afghanistan": "af"},{"Algeria": "dz"},{"Angola": "ao"},{"Argentina": "ar"},{"Australia": "au"},{"Austria": "at"},{"Azerbaijan": "az"},{"Bahrain": "bh"},
+        {"Bangladesh": "bd"},{"Belarus": "by"},{"Belgium": "be"},{"Bolivia": "bo"}, {"Bosnia&Herzegovina": "ba"}, {"Brazil": "br"}, {"Bulgaria": "bg"},
+        {"Burkina Faso": "bf"}, {"Cambodia": "kh"}, {"Cameroon": "cm"}, {"Canada": "ca"}, {"Chile": "cl"}, {"China": "zh"}, {"Colombia": "co"},
+        {"Costa Rica": "cr"}, {"Côte d'Ivoire": "ci"}, {"Croatia": "hr"}, {"Cuba": "cu"}, {"Cyprus": "cy"}, {"Czech Republic": "cz"}, {"Denmark": "dk"},
+        {"Dominican Republic": "do"}, {"DR Congo": "cd"}, {"Ecuador": "ec"}, {"Egypt": "eg"}, {"El Salvador": "sv"}, {"Estonia": "ee"}, {"Ethiopia": "et"},
+        {"Finland": "fi"}, {"France": "fr"}, {"Geogria": "ge"}, {"Germany": "de"}, {"Ghana": "gh"}, {"Greece": "gr"}, {"Guatemala": "gt"}, {"Honduras": "hn"},
+        {"Hong Kong": "hk"}, {"Hungary": "hu"}, {"Iceland": "is"}, {"India": "in"}, {"Indonesia": "id"}, {"Iraq": "iq"}, {"Ireland": "ie"}, {"Isarel": "il"},
+        {"Italy": "it"}, {"Japan": "jp"}, {"Jordan": "jo"}, {"Kazakhstan": "kz"}, {"Kenya": "ke"}, {"Kuwait": "kw"}, {"Latvia": "lv"}, {"Lebanon": "lb"},
+        {"Libya": "ly"}, {"Lithuania": "lt"}, {"Luxembourg": "lu"}, {"Macau": "mo"}, {"Madagascar": "mg"}, {"Malawi": "mw"}, {"Malaysia": "my"}, {"Mali": "ml"},
+        {"Mauritania": "mr"}, {"Mexico": "mx"}, {"Montenegro": "me"}, {"Morocco": "ma"}, {"Mozambique": "mz"}, {"Myanmar": "mm"}, {"Nepal": "np"}, {"Netherland": "nl"},
+        {"New Zealand": "nz"}, {"Nigeria": "ng"}, {"North Korea": "kp"}, {"Norway": "no"}, {"Oman": "om"}, {"Pakistan": "pk"}, {"Panama": "pa"}, {"Paraguay": "py"},
+        {"Peru": "pe"}, {"Philippines": "ph"}, {"Poland": "pl"}, {"Portugal": "pt"}, {"Puerto Rico": "pr"}, {"Romania": "ro"}, {"Russia": "ru"}, {"Saudi Arabia": "sa"},
+        {"Senegal": "sn"}, {"Serbia": "rs"}, {"Singapore": "sg"}, {"Slovakia": "sk"}, {"Slovenia": "si"}, {"Somalia": "so"}, {"South Africa": "za"}, {"South Korea": "kr"},
+        {"Spain": "es"}, {"Sri Lanka": "lk"}, {"Sudan": "sd"}, {"Sweden": "se"}, {"Switzerland": "ch"}, {"Taiwan": "tw"}, {"Tajikistan": "tj"}, {"Tanzania": "tz"},
+        {"Thailand": "th"}, {"Tunisia": "tn"}, {"Turkey": "tr"}, {"Turkmenistan": "tm"}, {"Uganda": "ug"}, {"Ukraine": "ua"}, {"United Arab Emirates": "ae"}, {"United Kingdom": "gb"},
+        {"United States of America": "us"}, {"Uruguay": "uy"}, {"Uzbekistan": "uz"}, {"Venezuela": "ve"}, {"Vietnam": "vi"}, {"Yemen": "ye"}, {"Zambia": "zm"}, {"Zimbabwe": "zw"}
+    ];
+
+    const languageObj = [
+        {"Belarusian": "be"}, {"Afrikaans": "af"}, {"Amharic": "am", "Arabic": "ar"}, {"Azerbaijani": "az"}, {"Bengali": "bn"}, {"Bosnian": "bs"},
+        {"Bulgarian": "bg"}, {"Burmese": "my"}, {"Central Kurdish": "ckb"}, {"Chinese": "zh"}, {"Croatian": "hr"}, {"Czech": "cs"}, {"Danish": "da"},
+        {"Dutch": "nl"}, {"English": "en"}, {"Estonian": "et"}, {"Filipino": "pi"}, {"Finnish": "fi"}, {"French": "fr"}, {"Georgian": "ka"}, {"German": "de"},
+        {"Greek": "el"}, {"Hebrew": "he"}, {"Hindi": "hi"}, {"Hungarian": "hu"}, {"Icelandic": "is"}, {"Indonesian": "in"}, {"Italian": "it"}, {"Japanese": "jp"},
+        {"Khmer": "kh"}, {"Korean": "ko"}, {"Latvian": "lv"}, {"Lithuanian": "lt"}, {"Luxembourgish": "lb"}, {"Malay": "ms"}, {"Nepali": "ne"}, {"Norwegian": "no"},
+        {"Pashto": "ps"}, {"Persian": "fa"}, {"Polish": "pl"}, {"Portuguese": "pt"}, {"Romanian": "ro"}, {"Russian": "ru"}, {"Serbian": "sr"}, {"Shona": "sn"},
+        {"Sinhala": "si"}, {"Slovak": "sk"}, {"Slovenian": "sl"}, {"Somali": "so"}, {"Spanish": "es"}, {"Swahili": "sw"}, {"Swedish": "sv"}, {"Tajik": "tg"},
+        {"Tamil": "ta"}, {"Thai": "th"}, {"Turkish": "tr"}, {"Turkmen": "tk"}, {"Ukrainian": "uk"}, {"Urdu": "ur"}, {"Uzbek": "uz"}, {"Vietnamese": "vi"}
+    ]
+    
+    function renderAllCheckboxes(checkboxtype, name){
+        console.log(`checkbox-${checkboxtype}`)
+        const parent = document.getElementById(`checkbox-${checkboxtype}`);
+        
+        console.log(parent)
+        // Loop to create 10 checkboxes
+        for (let i = 0; i < name.length; i++) {
+            // Create a unique ID for each checkbox
+            const id = `checkbox-${i}`;
+
+            // Create the checkbox element
+            const a = document.createElement('a');
+            a.className = 'dropdown-item'
+            
+            let key = ""
+            let val = ""
+            if(checkboxtype === 'language' || checkboxtype === 'country'){
+                for(prop in name[i]){
+                    key = prop
+                    val = name[i][prop]
+                }
+            }
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = id;
+            
+            // Create the label element
+            const label = document.createElement('label');
+            label.setAttribute('for', id);
+
+            if(checkboxtype === 'language' || checkboxtype === 'country'){
+                checkbox.value = `${val}`;
+                label.innerHTML = `${key}`
+            }else{
+                label.innerHTML = ` ${name[i]}`;
+                checkbox.value = `${name[i]}`
+            }
+
+            // Add the checkbox and label to the parent element
+            a.appendChild(checkbox)
+            a.appendChild(label)
+
+            parent.appendChild(a);
+        }
+    }
+
+    renderAllCheckboxes('category', categories)
+    renderAllCheckboxes('language', languageObj)
+    renderAllCheckboxes('country', countryObj)
+
+    function submitValidation(event){
+        event.preventDefault()
+        let q = document.getElementById("keyword-input");
+        let qInTitle = document.getElementById("title-input");
+        let language = document.getElementById("language-input");
+        let domain = document.getElementById("domain-input");
+        let country = document.getElementById("country-input");
+        
+        // check regex for languages, allow for string starts with a certain input (don't use dropdown - not sure if working) 
+        if(!checkAlphabetical(domain)) return false;
+
+        // check if categories checkbox has less than or equal to 5
+        let categories_checkboxes = document.querySelector("#checkbox-category")
+        let categories_checked = categories_checkboxes.querySelectorAll('input[type=checkbox]:checked')
+        //
+        let language_checkboxes = document.querySelector("#checkbox-language")
+        let language_checked = language_checkboxes.querySelectorAll('input[type=checkbox]:checked')
+
+        let country_checkboxes = document.querySelector("#checkbox-country")
+        let country_checked = country_checkboxes.querySelectorAll('input[type=checkbox]:checked')
+
+        if(categories_checked.length > 5 || language_checked.length > 5 || country_checked.length > 5){
+            return false;
+        }
+
+        console.log(country_checked.length)
+
+        let listCategories = ''
+        for(let i = 0; i < categories_checked.length; i++){
+            if(i > 0) listCategories = listCategories.concat(",")
+            console.log(categories_checked[i])
+            listCategories = listCategories.concat(categories_checked[i].value.toLowerCase())
+        }
+
+        let listLanguages = ''
+        for(let i = 0; i < language_checked.length; i++){
+            if(i > 0) listLanguages = listLanguages.concat(",")
+            listLanguages = listLanguages.concat(language_checked[i].value.toLowerCase())
+        }
+
+        let listCountries = ''
+        for(let i = 0; i < country_checked.length; i++){
+            if(i > 0) listCountries = listCountries.concat(",")
+            listCountries = listCountries.concat(country_checked[i].value.toLowerCase())
+        }
+
+        console.log(listCategories)
+        console.log(listLanguages)
+        console.log(listCountries)
+
+        if(q.value.length > 0 && qInTitle.value.length > 0){
+            showInvalidError(q)
+            showInvalidError(qInTitle)
+            return false;
+        }else{
+            removeInvalidError(q)
+            removeInvalidError(qInTitle)
+        }
+        
+        const payload = 
+        { 
+            "q": q.value,
+            "qInTitle": qInTitle.value,
+            "country": listCountries,
+            "category": listCategories,
+            "language": listLanguages,
+            "domain": domain.value
+        }
+
+        console.log(payload)
+
+        fetch('./backend/index.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                payload
+            )
+        }).then(response => response.json())
+        .then(data => {
+            data = JSON.parse(data)
+            console.log(data.results)
+            let articles = document.getElementById('result-articles')
+            let res = data.results;
+            if(res.length == 0) {
+                noResult(articles)
+                return false;
+            }
+
+            removeAllArticles(articles)
+
+            for(let i = 0; i < res.length; i++){
+                // create the elements of an article
+                const title =  document.createElement('h4')
+                const content = document.createElement('p')
+                const img = document.createElement("img");
+                const a = document.createElement('a')
+                const source = document.createElement('h6')
+                const language = document.createElement('h6')
+                const pubDate = document.createElement('h6')
+                const creator = document.createElement('h6')
+                const categories = document.createElement('span')
+                const countries = document.createElement('span')
+                const keywords = document.createElement('span')
+
+                // reformat for uniformity
+                languageString = res[i].language.charAt(0).toUpperCase() + res[i].language.slice(1)
+                img.style.display = "block";
+                img.style.margin = "auto";
+                
+                // set the value of the elements
+                title.innerHTML = "Article " + (i + 1) + ": " + res[i].title;
+                content.innerHTML = res[i].content;
+                if(res[i].image_url != null) img.src = res[i].image_url;
+                a.href = res[i].link;
+                a.innerHTML = "Full link to article: " + res[i].link;
+                source.innerHTML = "Source: " + res[i].source_id;
+                language.innerHTML = "Language: " + languageString;
+                pubDate.innerHTML = "Publication Time: " + res[i].pubDate;
+
+                // loop over all of creators
+                creator.innerHTML = "Creator: ";
+                if (res[i].creator === null) creator.innerHTML += 'Unknown' 
+                else{
+                    for(let j = 0; j < res[i].creator.length; j++){
+                        creator.innerHTML += `${res[i].creator[j]}`;
+                        if(j < res[i].creator.length - 1) creator.innerHTML += ', ';
+                    }
+                }
+
+                // loop over all of the categories
+                for(let j = 0; j < res[i].category.length; j++){
+                    categories.innerHTML += `<span class="badge badge-info">${res[i].category[j]}</span>`;
+                }
+
+                // loop over all of the countries
+                for(let j = 0; j < res[i].country.length; j++){
+                    countries.innerHTML += `<span class="badge badge-primary">${res[i].country[j]}</span>`;
+                }
+                
+                let keywordLength = res[i].keywords !== null ? res[i].keywords.length : 0
+                for(let j = 0; j < keywordLength; j++){
+                    keywords.innerHTML += `<span class="badge badge-danger">${res[i].keywords[j]}</span>`;
+                }
+
+                // append the newly created elements to the parent element
+                articles.appendChild(title)
+                articles.appendChild(content)
+                articles.append(img)
+                articles.appendChild(a)
+                articles.appendChild(source)
+                articles.appendChild(language)
+                articles.appendChild(pubDate)
+                articles.appendChild(creator)
+                articles.appendChild(categories)
+                articles.appendChild(countries)
+                articles.appendChild(keywords)
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            let articles = document.getElementById('result-articles')
+            noResult(articles)
+            return false;
+        });
+
+        return true;
+    }
+
+    function removeAllArticles(parent_articles){
+        let child = parent_articles.lastElementChild; 
+            // remove every articles when a new query is made by the user
+        while (child) {
+            parent_articles.removeChild(child);
+            child = parent_articles.lastElementChild;
+        }
+    }
+
+    function checkAlphabetical(tocheck){
+        console.log(tocheck)
+        let regex = /^[a-zA-Z]*$/; // Example regex for alphabetical input, allow for emptiness
+        if(!regex.test(tocheck.value)){
+            showInvalidError(tocheck)
+            return false;
+        } else {
+            removeInvalidError(tocheck)// Remove is-invalid class if input is valid
+            return true;
+        }
+    }
+    
+    function noResult(articles){
+        removeAllArticles(articles)
+        const notifyNoResult = document.createElement('h4')
+        notifyNoResult.innerHTML = 'No results matches the criteria'
+        notifyNoResult.style.textAlign = 'center'
+        articles.appendChild(notifyNoResult)
+    }
+
+    function showInvalidError(tocheck){
+       tocheck.classList.add("is-invalid");
+    }
+
+    function removeInvalidError(tocheck){
+        tocheck.classList.remove("is-invalid");
+    }    
+    
+</script>
+</html>
